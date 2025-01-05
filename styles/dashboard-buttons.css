@@ -1,0 +1,37 @@
+.dashboard-button-primary {
+  @apply bg-[#5A73A3] text-white font-medium rounded-lg px-4 py-2 transition-all duration-200 ease-in-out;
+  @apply hover:bg-[#7A94C4] hover:scale-105;
+  @apply active:bg-[#40577C] active:scale-98;
+  @apply disabled:bg-[#E5E5E5] disabled:text-[#A6A6A6] disabled:cursor-not-allowed disabled:hover:scale-100;
+}
+
+.dashboard-button-secondary {
+  @apply bg-white text-black font-medium rounded-lg px-4 py-2 transition-all duration-200 ease-in-out;
+  @apply border border-[#CCCCCC];
+  @apply hover:text-[#007BFF] hover:border-[#A6A6A6] hover:scale-105;
+  @apply active:scale-98;
+  @apply disabled:bg-[#E5E5E5] disabled:text-[#A6A6A6] disabled:border-[#CCCCCC] disabled:cursor-not-allowed disabled:hover:scale-100;
+}
+
+.dashboard-button-primary:focus,
+.dashboard-button-secondary:focus {
+  @apply outline-none ring-2 ring-[#5A73A3] ring-opacity-50;
+}
+
+@keyframes button-click {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(0.98); }
+}
+
+.dashboard-button-primary:active,
+.dashboard-button-secondary:active {
+  animation: button-click 0.2s ease-in-out;
+}
+
+@media (max-width: 640px) {
+  .dashboard-button-primary,
+  .dashboard-button-secondary {
+    @apply w-full;
+  }
+}
+
