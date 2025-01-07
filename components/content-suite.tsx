@@ -74,7 +74,6 @@ export function ContentSuite() {
       <div className="space-y-12">
         {activeTab === 'create' ? (
           <>
-            <BlogTopicGenerator onTopicSelect={setBlogTopic} />
             <BlogCreation initialBlogTopic={blogTopic} onBlogApproved={handleBlogApproved} />
           </>
         ) : (
