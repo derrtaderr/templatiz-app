@@ -6,31 +6,38 @@ import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { Edit, Trash2, Calendar, Plus, Video, FileText, Repeat, BarChart2, Save } from 'lucide-react'
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts'
+import { Edit, Trash2, Calendar, Plus, Video, FileText, Repeat, BarChart2, Save, Linkedin, Twitter, Youtube, Info } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { StreakWidget } from './streak-widget'
 
 // Mock data for charts
+const platformData = [
+  { platform: 'LinkedIn', scheduled: 5, engagement: 8.5 },
+  { platform: 'Twitter', scheduled: 3, engagement: 6.2 },
+  { platform: 'YouTube', scheduled: 2, engagement: 12.3 },
+]
+
 const engagementData = [
-  { name: 'Jan', value: 400 },
-  { name: 'Feb', value: 300 },
-  { name: 'Mar', value: 600 },
-  { name: 'Apr', value: 800 },
-  { name: 'May', value: 500 },
-  { name: 'Jun', value: 700 },
+  { name: 'Mon', linkedin: 8.5, twitter: 6.2, youtube: 12.3 },
+  { name: 'Tue', linkedin: 9.1, twitter: 7.0, youtube: 11.5 },
+  { name: 'Wed', linkedin: 7.8, twitter: 5.9, youtube: 13.2 },
+  { name: 'Thu', linkedin: 8.9, twitter: 6.8, youtube: 12.8 },
+  { name: 'Fri', linkedin: 9.3, twitter: 7.2, youtube: 11.9 },
 ]
 
 const categoriesData = [
-  { name: 'Knowledge', value: 400 },
-  { name: 'Growth', value: 300 },
-  { name: 'Authority', value: 300 },
+  { name: 'Knowledge', value: 8.7 },
+  { name: 'Growth', value: 9.2 },
+  { name: 'Authority', value: 7.8 },
 ]
 
 const timingData = [
-  { name: '9AM', value: 100 },
-  { name: '12PM', value: 200 },
-  { name: '3PM', value: 300 },
-  { name: '6PM', value: 200 },
-  { name: '9PM', value: 100 },
+  { time: '9AM', engagement: 7.5 },
+  { time: '12PM', engagement: 8.2 },
+  { time: '3PM', engagement: 9.1 },
+  { time: '6PM', engagement: 8.4 },
+  { time: '9PM', engagement: 7.2 },
 ]
 
 export function WelcomeMessage({ name }: { name: string }) {
@@ -48,85 +55,66 @@ export function WelcomeMessage({ name }: { name: string }) {
   )
 }
 
-export function MetricCard({ title, value, subtext, progress }: { title: string; value: string; subtext?: string; progress?: number }) {
+export function TemplatesProgress() {
+  const used = 15
+  const total = 30
+  const progress = (used / total) * 100
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <CardTitle className="text-sm font-medium">Templates Created</CardTitle>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <Info className="h-4 w-4 text-muted-foreground" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Templates used this month out of your monthly quota</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-        {subtext && <p className="text-xs text-muted-foreground">{subtext}</p>}
-        {progress !== undefined && (
-          <Progress value={progress} className="mt-2" />
-        )}
-      </CardContent>
-    </Card>
-  )
-}
-
-export function RecentActivity() {
-  const activities = [
-    { title: "Growth Hacking 101", category: "Growth", platform: "linkedin", date: "2024-10-19" },
-    { title: "Weekly Industry Insights", category: "Knowledge", platform: "twitter", date: "2024-10-18" },
-    { title: "Leadership Tips", category: "Authority", platform: "linkedin", date: "2024-10-17" },
-  ]
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Recent Activity</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {activities.map((activity, index) => (
-            <div key={index} className="flex items-center justify-between p-2 bg-muted rounded-lg">
-              <div>
-                <p className="font-medium">{activity.title}</p>
-                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                  <Badge variant="secondary">{activity.category}</Badge>
-                  <span>{activity.platform}</span>
-                  <span>{new Date(activity.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
-                </div>
-              </div>
-              <div className="flex space-x-2">
-                <Button variant="ghost" size="sm"><Edit className="h-4 w-4" /></Button>
-                <Button variant="ghost" size="sm"><Calendar className="h-4 w-4" /></Button>
-                <Button variant="ghost" size="sm"><Trash2 className="h-4 w-4" /></Button>
-              </div>
-            </div>
-          ))}
+        <div className="text-2xl font-bold mb-2">{used}/{total}</div>
+        <Progress value={progress} className="h-2" />
+        <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+          <span>Monthly Usage</span>
+          <span>{Math.round(progress)}%</span>
         </div>
       </CardContent>
     </Card>
   )
 }
 
-export function PopularTemplates() {
-  const templates = [
-    { name: "Weekly Update", usage: 28 },
-    { name: "Product Launch", usage: 22 },
-    { name: "Industry News", usage: 19 },
-    { name: "Team Spotlight", usage: 15 },
-  ]
-
+export function PlatformMetrics() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Popular Templates</CardTitle>
+        <CardTitle>Platform Overview</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {templates.map((template, index) => (
-            <Card key={index}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{template.name}</CardTitle>
-                <Badge variant="secondary">{template.usage}</Badge>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full h-10 dashboard-button-secondary text-sm">Use Template</Button>
-              </CardContent>
-            </Card>
+        <div className="space-y-4">
+          {platformData.map((platform) => (
+            <div key={platform.platform} className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                {platform.platform === 'LinkedIn' ? (
+                  <Linkedin className="h-5 w-5 text-blue-600" />
+                ) : platform.platform === 'Twitter' ? (
+                  <Twitter className="h-5 w-5 text-sky-500" />
+                ) : (
+                  <Youtube className="h-5 w-5 text-red-500" />
+                )}
+                <div>
+                  <p className="font-medium">{platform.platform}</p>
+                  <p className="text-sm text-muted-foreground">{platform.scheduled} posts scheduled</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="font-medium">{platform.engagement}%</p>
+                <p className="text-sm text-muted-foreground">Engagement</p>
+              </div>
+            </div>
           ))}
         </div>
       </CardContent>
@@ -141,44 +129,80 @@ export function PerformanceInsights() {
         <CardTitle>Performance Insights</CardTitle>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="engagement">
+        <Tabs defaultValue="engagement" className="space-y-4">
           <TabsList>
             <TabsTrigger value="engagement">Engagement</TabsTrigger>
             <TabsTrigger value="categories">Categories</TabsTrigger>
             <TabsTrigger value="timing">Timing</TabsTrigger>
           </TabsList>
           <TabsContent value="engagement">
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={engagementData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="value" stroke="#8884d8" />
-              </LineChart>
-            </ResponsiveContainer>
+            <div className="pt-2 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-medium">Weekly Engagement Rate</h4>
+                  <p className="text-sm text-muted-foreground">Average engagement across platforms</p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-1">
+                    <div className="h-3 w-3 rounded-full bg-blue-600" />
+                    <span className="text-sm text-muted-foreground">LinkedIn</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <div className="h-3 w-3 rounded-full bg-sky-500" />
+                    <span className="text-sm text-muted-foreground">Twitter</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <div className="h-3 w-3 rounded-full bg-red-500" />
+                    <span className="text-sm text-muted-foreground">YouTube</span>
+                  </div>
+                </div>
+              </div>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={engagementData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <RechartsTooltip />
+                  <Line type="monotone" dataKey="linkedin" stroke="#2563eb" strokeWidth={2} />
+                  <Line type="monotone" dataKey="twitter" stroke="#0ea5e9" strokeWidth={2} />
+                  <Line type="monotone" dataKey="youtube" stroke="#ef4444" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </TabsContent>
           <TabsContent value="categories">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={categoriesData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="value" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="pt-2 space-y-4">
+              <div>
+                <h4 className="text-sm font-medium">Category Performance</h4>
+                <p className="text-sm text-muted-foreground">Average engagement by content category</p>
+              </div>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={categoriesData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <RechartsTooltip />
+                  <Bar dataKey="value" fill="#5A73A3" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </TabsContent>
           <TabsContent value="timing">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={timingData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="value" fill="#82ca9d" />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="pt-2 space-y-4">
+              <div>
+                <h4 className="text-sm font-medium">Best Posting Times</h4>
+                <p className="text-sm text-muted-foreground">Engagement rate by time of day</p>
+              </div>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={timingData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="time" />
+                  <YAxis />
+                  <RechartsTooltip />
+                  <Bar dataKey="engagement" fill="#5A73A3" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </TabsContent>
         </Tabs>
       </CardContent>
@@ -186,47 +210,37 @@ export function PerformanceInsights() {
   )
 }
 
-export function ContentMultiplicationQuickAccess() {
-  return (
-    <Card className="mb-6">
-      <CardHeader>
-        <CardTitle>Content Suite</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col sm:flex-row gap-4">
-          <Button 
-            className="dashboard-button-primary flex-1 min-w-[240px] h-12"
-          >
-            <Plus className="mr-2 h-5 w-5" /> Create New Blog Post
-          </Button>
-          <Button 
-            className="dashboard-button-primary flex-1 min-w-[240px] h-12"
-          >
-            <Repeat className="mr-2 h-5 w-5" /> Repurpose Existing Content
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-export function VideoStudioQuickAccess() {
+export function QuickActions() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Video Studio</CardTitle>
+        <CardTitle>Quick Actions</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Button 
-            className="dashboard-button-primary flex-1 min-w-[240px] h-12"
+            className="h-20 flex flex-col items-center justify-center bg-[#5C75A5] hover:bg-[#6D86B5] active:bg-[#4A5E87] text-white font-medium transition-colors duration-200 ease-in-out rounded-md"
           >
-            <Video className="mr-2 h-5 w-5" /> Create YouTube Short
+            <Plus className="h-5 w-5 mb-1" />
+            <span>Create Post</span>
           </Button>
           <Button 
-            className="dashboard-button-primary flex-1 min-w-[240px] h-12"
+            className="h-20 flex flex-col items-center justify-center bg-[#5C75A5] hover:bg-[#6D86B5] active:bg-[#4A5E87] text-white font-medium transition-colors duration-200 ease-in-out rounded-md"
           >
-            <Video className="mr-2 h-5 w-5" /> Start Long-form Video
+            <FileText className="h-5 w-5 mb-1" />
+            <span>New Blog</span>
+          </Button>
+          <Button 
+            className="h-20 flex flex-col items-center justify-center bg-[#5C75A5] hover:bg-[#6D86B5] active:bg-[#4A5E87] text-white font-medium transition-colors duration-200 ease-in-out rounded-md"
+          >
+            <Video className="h-5 w-5 mb-1" />
+            <span>Record Video</span>
+          </Button>
+          <Button 
+            className="h-20 flex flex-col items-center justify-center bg-[#5C75A5] hover:bg-[#6D86B5] active:bg-[#4A5E87] text-white font-medium transition-colors duration-200 ease-in-out rounded-md"
+          >
+            <Repeat className="h-5 w-5 mb-1" />
+            <span>Repurpose</span>
           </Button>
         </div>
       </CardContent>
@@ -234,22 +248,70 @@ export function VideoStudioQuickAccess() {
   )
 }
 
-export function ContentActions() {
+export function RecentActivity() {
+  const activities = [
+    { 
+      title: "Growth Hacking 101", 
+      category: "Growth", 
+      platform: "linkedin",
+      date: "2024-01-15",
+      engagement: 8.5
+    },
+    { 
+      title: "Weekly Industry Insights", 
+      category: "Knowledge", 
+      platform: "twitter",
+      date: "2024-01-14",
+      engagement: 7.2
+    },
+    { 
+      title: "Leadership Tips", 
+      category: "Authority", 
+      platform: "linkedin",
+      date: "2024-01-13",
+      engagement: 9.1
+    },
+  ]
+
   return (
-    <div className="flex flex-wrap gap-4 justify-center">
-      <Button className="dashboard-button-secondary min-w-[120px] h-10">
-        <Save className="mr-2 h-4 w-4" /> Save Draft
-      </Button>
-      <Button className="dashboard-button-secondary min-w-[120px] h-10">
-        <Calendar className="mr-2 h-4 w-4" /> Schedule
-      </Button>
-      <Button className="dashboard-button-primary min-w-[120px] h-10">
-        Post Now
-      </Button>
-      <Button className="dashboard-button-secondary min-w-[120px] h-10">
-        <BarChart2 className="mr-2 h-4 w-4" /> View Analytics
-      </Button>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Recent Activity</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {activities.map((activity, index) => (
+            <div key={index} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+              <div className="space-y-1">
+                <div className="flex items-center space-x-2">
+                  {activity.platform === 'linkedin' ? (
+                    <Linkedin className="h-4 w-4 text-blue-600" />
+                  ) : activity.platform === 'twitter' ? (
+                    <Twitter className="h-4 w-4 text-sky-500" />
+                  ) : (
+                    <Youtube className="h-4 w-4 text-red-500" />
+                  )}
+                  <p className="font-medium">{activity.title}</p>
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                  <Badge variant="secondary">{activity.category}</Badge>
+                  <span>{new Date(activity.date).toLocaleDateString()}</span>
+                  <span>{activity.engagement}% engagement</span>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <Button variant="ghost" size="sm">
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="sm">
+                  <Repeat className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 

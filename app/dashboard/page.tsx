@@ -1,51 +1,25 @@
-import { 
-  WelcomeMessage,
-  MetricCard,
-  RecentActivity,
-  PopularTemplates,
-  PerformanceInsights,
-  ContentMultiplicationQuickAccess,
-  VideoStudioQuickAccess
-} from "@/components/dashboard/dashboard-components"
+'use client'
+
+import { WelcomeMessage, TemplatesProgress, PlatformMetrics, PerformanceInsights, QuickActions, RecentActivity } from "@/components/dashboard/dashboard-components"
 import { StreakWidget } from "@/components/dashboard/streak-widget"
 
 export default function DashboardPage() {
   return (
-    <div className="container py-6 space-y-8">
-      <WelcomeMessage name="John Doe" />
+    <div className="container mx-auto p-6 space-y-6">
+      <WelcomeMessage name="Jason" />
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="md:col-span-2 lg:col-span-1">
-          <StreakWidget />
-        </div>
-        <MetricCard 
-          title="Templates Created" 
-          value="18/30" 
-          progress={60} 
-        />
-        <MetricCard 
-          title="Scheduled Posts" 
-          value="12" 
-          subtext="this week" 
-        />
-        <MetricCard 
-          title="Recent Engagement" 
-          value="8.5%" 
-          subtext="avg. rate" 
-        />
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <TemplatesProgress />
+        <StreakWidget />
+        <PlatformMetrics />
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <QuickActions />
+      
+      <div className="grid gap-6 lg:grid-cols-2">
+        <PerformanceInsights />
         <RecentActivity />
-        <div className="space-y-6">
-          <ContentMultiplicationQuickAccess />
-          <VideoStudioQuickAccess />
-        </div>
       </div>
-
-      <PopularTemplates />
-      
-      <PerformanceInsights />
     </div>
   )
 }

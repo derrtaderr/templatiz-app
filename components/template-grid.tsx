@@ -14,6 +14,7 @@ import {
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { TemplateModal } from "./template-modal"
 
 const templates = [
   {
@@ -54,6 +55,8 @@ export function TemplateGrid() {
   const [selectedPlatform, setSelectedPlatform] = useState("all")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [sortBy, setSortBy] = useState("newest")
+  const [selectedTemplate, setSelectedTemplate] = useState<typeof templates[0] | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const filteredTemplates = templates.filter(template => 
     template.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -70,6 +73,11 @@ export function TemplateGrid() {
         return new Date(b.date).getTime() - new Date(a.date).getTime()
     }
   })
+
+  const handleViewTemplate = (template: typeof templates[0]) => {
+    setSelectedTemplate(template)
+    setIsModalOpen(true)
+  }
 
   return (
     <div className="space-y-6">
@@ -150,10 +158,20 @@ export function TemplateGrid() {
             </CardContent>
             <CardFooter className="justify-between pt-4 border-t border-[#4b5563] flex-wrap gap-2">
               <div className="flex flex-wrap gap-1">
-                <Button variant="ghost" size="sm" className="text-[#9ca3af] hover:text-[#f3f4f6]">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-[#9ca3af] hover:text-[#f3f4f6]"
+                  onClick={() => handleViewTemplate(template)}
+                >
                   <Edit className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="sm" className="text-[#9ca3af] hover:text-[#f3f4f6]">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-[#9ca3af] hover:text-[#f3f4f6]"
+                  onClick={() => handleViewTemplate(template)}
+                >
                   <Eye className="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" size="sm" className="text-[#9ca3af] hover:text-[#f3f4f6]">
@@ -185,6 +203,17 @@ export function TemplateGrid() {
           </Card>
         ))}
       </div>
+
+      {selectedTemplate && (
+        <TemplateModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false)
+            setSelectedTemplate(null)
+          }}
+          template={selectedTemplate}
+        />
+      )}
     </div>
   )
 }

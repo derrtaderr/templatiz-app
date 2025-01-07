@@ -1,0 +1,95 @@
+**Templatiz Brand Colors Documentation**
+
+---
+
+### **Primary Colors**
+
+- **Primary Blue-Gray**: `#5C75A5`
+  - **Usage:** Buttons, headers, and key actionable elements.
+  - **Hover State:** `#6D86B5`
+  - **Active State:** `#4A5E87`
+
+- **Background Dark Blue**: `#1C223A`
+  - **Usage:** Main application background.
+
+- **Sidebar Background**: `#121828`
+  - **Usage:** Left-hand navigation sidebar background.
+
+- **Card Background**: `#2C334E`
+  - **Usage:** Content cards, widgets, and modal backgrounds.
+
+- **Accent Colors**:
+  - **Highlight Yellow:** `#FFD700`
+    - **Usage:** Badges, alerts, and notifications.
+  - **Engagement Orange:** `#FF6A00`
+    - **Usage:** Metrics, streaks, and progress indicators.
+
+---
+
+### **Text Colors**
+
+- **Primary Text:** `#FFFFFF`
+  - **Usage:** Headings and key text.
+- **Secondary Text:** `#AAB4CF`
+  - **Usage:** Subheadings, descriptions, and less prominent text.
+- **Disabled Text:** `#6C7A96`
+  - **Usage:** Placeholder text, inactive elements.
+
+---
+
+### **Button States**
+
+- **Primary Button**:
+  - Base: `#5C75A5`
+  - Hover: `#6D86B5`
+  - Active: `#4A5E87`
+- **Secondary Button**:
+  - Base: `#2C334E`
+  - Hover: `#3A445E`
+  - Active: `#1F2638`
+- **Destructive Button**:
+  - Base: `#FF6A00`
+  - Hover: `#FF8330`
+  - Active: `#CC5200`
+
+---
+
+### **Interactive Elements**
+
+- **Links:** `#5C75A5`
+  - **Hover State:** Underlined and `#6D86B5`
+- **Icons:** Matches the text color of their context.
+  - Active or actionable icons adopt `#5C75A5`.
+
+---
+
+### **Graph and Chart Colors**
+
+- **Primary Data Line:** `#5C75A5`
+- **Secondary Data Line:** `#FF6A00`
+- **Tertiary Data Line:** `#FFD700`
+
+---
+
+### **Shadows and Borders**
+
+- **Box Shadow:** `rgba(0, 0, 0, 0.25)`
+- **Card Border:** `#2C334E`
+
+---
+
+### **Testing Notes**
+
+- Ensure all text and elements maintain a contrast ratio compliant with accessibility standards (minimum 4.5:1 for small text).
+- Verify consistency across all platforms and devices.
+
+---
+
+This document will be regularly updated to ensure all brand colors and their uses are aligned with Templatiz’s visual identity.
+
+
+
+---
+
+These guidelines ensure consistency in design and development across the entire application, improving usability and brand recognition. Please confirm these details or let me know if any additional adjustments are needed.
+

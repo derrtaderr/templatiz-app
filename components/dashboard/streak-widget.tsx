@@ -26,13 +26,13 @@ export function StreakWidget() {
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">Your Streak</CardTitle>
-        <Flame className="h-4 w-4 text-orange-500" />
+        <Flame className="h-4 w-4 text-[#FF6A00]" />
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex justify-between items-center">
+      <CardContent>
+        <div className="flex justify-between items-center mb-6">
           <div>
             <div className="text-2xl font-bold">{streak}-Day Streak</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-[#AAB4CF]">
               {nextMilestone - streak} days until your {nextMilestone}-day badge!
             </p>
           </div>
@@ -40,8 +40,8 @@ export function StreakWidget() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="flex items-center space-x-2">
-                  <Award className="h-6 w-6 text-yellow-500" />
-                  <Award className="h-6 w-6 text-gray-300" />
+                  <Award className="h-6 w-6 text-[#FFD700]" />
+                  <Award className="h-6 w-6 text-[#6C7A96]" />
                 </div>
               </TooltipTrigger>
               <TooltipContent>
@@ -51,9 +51,11 @@ export function StreakWidget() {
             </Tooltip>
           </TooltipProvider>
         </div>
-        <Progress value={progress} className="w-full" />
+        <Progress value={progress} className="w-full mb-6" />
         <Link href="/calendar" passHref>
-          <Button className="w-full" variant="default">
+          <Button 
+            className="w-full bg-[#5C75A5] hover:bg-[#6D86B5] active:bg-[#4A5E87] text-white font-bold py-3 px-6 rounded-md transition-colors"
+          >
             <Calendar className="mr-2 h-4 w-4" /> Schedule a Post
           </Button>
         </Link>
