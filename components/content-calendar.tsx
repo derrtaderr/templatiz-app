@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
-import { Award, Edit2 } from 'lucide-react'
+import { Award, Edit2, Filter, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -14,6 +14,8 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Linkedin, Twitter, Youtube } from 'lucide-react'
 import { Checkbox } from "@/components/ui/checkbox"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 interface Analytics {
   totalScheduledPosts: number
@@ -27,8 +29,9 @@ interface Filters {
     start: Date | null
     end: Date | null
   }
-  status: ('scheduled' | 'published' | 'draft')[]
   platforms: ('linkedin' | 'twitter' | 'youtube')[]
+  contentType: ('text' | 'video')[]
+  categories: ('knowledge' | 'growth' | 'authority')[]
 }
 
 interface Post {
@@ -265,12 +268,195 @@ function AnalyticsSection({ analytics }: { analytics: Analytics }) {
   )
 }
 
+function FilterDialog({ isOpen, onClose, filters, onApplyFilters }: {
+  isOpen: boolean
+  onClose: () => void
+  filters: Filters
+  onApplyFilters: (filters: Filters) => void
+}) {
+  const [tempFilters, setTempFilters] = useState<Filters>(filters)
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[500px] bg-[#2d3748] border-[#4b5563] text-[#f3f4f6]">
+        <DialogHeader>
+          <DialogTitle className="text-[#f3f4f6]">Filter Posts</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-[#9ca3af]">Date Range</label>
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal bg-[#374151] border-[#4b5563] text-[#f3f4f6]"
+                    >
+                      {tempFilters.dateRange.start ? (
+                        format(tempFilters.dateRange.start, "PPP")
+                      ) : (
+                        <span className="text-[#9ca3af]">Pick a start date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-[#2d3748] border-[#4b5563]">
+                    <Calendar
+                      mode="single"
+                      selected={tempFilters.dateRange.start || undefined}
+                      onSelect={(date) => setTempFilters({
+                        ...tempFilters,
+                        dateRange: { ...tempFilters.dateRange, start: date || null }
+                      })}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="flex-1">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal bg-[#374151] border-[#4b5563] text-[#f3f4f6]"
+                    >
+                      {tempFilters.dateRange.end ? (
+                        format(tempFilters.dateRange.end, "PPP")
+                      ) : (
+                        <span className="text-[#9ca3af]">Pick an end date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-[#2d3748] border-[#4b5563]">
+                    <Calendar
+                      mode="single"
+                      selected={tempFilters.dateRange.end || undefined}
+                      onSelect={(date) => setTempFilters({
+                        ...tempFilters,
+                        dateRange: { ...tempFilters.dateRange, end: date || null }
+                      })}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-[#9ca3af]">Platforms</label>
+            <div className="flex flex-wrap gap-2">
+              {['linkedin', 'twitter', 'youtube'].map((platform) => (
+                <Button
+                  key={platform}
+                  variant="outline"
+                  className={`
+                    ${tempFilters.platforms.includes(platform as any)
+                      ? 'bg-[#5A73A3] text-[#f3f4f6] border-[#5A73A3]'
+                      : 'bg-[#374151] text-[#9ca3af] border-[#4b5563]'
+                    }
+                  `}
+                  onClick={() => {
+                    const platforms = tempFilters.platforms.includes(platform as any)
+                      ? tempFilters.platforms.filter(p => p !== platform)
+                      : [...tempFilters.platforms, platform as any]
+                    setTempFilters({ ...tempFilters, platforms })
+                  }}
+                >
+                  {platform.charAt(0).toUpperCase() + platform.slice(1)}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-[#9ca3af]">Content Type</label>
+            <div className="flex gap-2">
+              {['text', 'video'].map((type) => (
+                <Button
+                  key={type}
+                  variant="outline"
+                  className={`
+                    ${tempFilters.contentType.includes(type as any)
+                      ? 'bg-[#5A73A3] text-[#f3f4f6] border-[#5A73A3]'
+                      : 'bg-[#374151] text-[#9ca3af] border-[#4b5563]'
+                    }
+                  `}
+                  onClick={() => {
+                    const contentType = tempFilters.contentType.includes(type as any)
+                      ? tempFilters.contentType.filter(t => t !== type)
+                      : [...tempFilters.contentType, type as any]
+                    setTempFilters({ ...tempFilters, contentType })
+                  }}
+                >
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-[#9ca3af]">Categories</label>
+            <div className="flex flex-wrap gap-2">
+              {['knowledge', 'growth', 'authority'].map((category) => (
+                <Button
+                  key={category}
+                  variant="outline"
+                  className={`
+                    ${tempFilters.categories.includes(category as any)
+                      ? 'bg-[#5A73A3] text-[#f3f4f6] border-[#5A73A3]'
+                      : 'bg-[#374151] text-[#9ca3af] border-[#4b5563]'
+                    }
+                  `}
+                  onClick={() => {
+                    const categories = tempFilters.categories.includes(category as any)
+                      ? tempFilters.categories.filter(c => c !== category)
+                      : [...tempFilters.categories, category as any]
+                    setTempFilters({ ...tempFilters, categories })
+                  }}
+                >
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end space-x-2 pt-4 border-t border-[#4b5563]">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="border-[#4b5563] text-[#9ca3af] hover:text-[#f3f4f6]"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              onApplyFilters(tempFilters)
+              onClose()
+            }}
+            className="bg-[#5A73A3] text-[#f3f4f6] hover:bg-[#4C6288]"
+          >
+            Apply Filters
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 export function ContentCalendar() {
   const [searchQuery, setSearchQuery] = useState("")
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [filters, setFilters] = useState<Filters>({
     dateRange: { start: null, end: null },
-    status: [],
-    platforms: []
+    platforms: [],
+    contentType: [],
+    categories: []
+  })
+  const [analytics] = useState<Analytics>({
+    totalScheduledPosts: 12,
+    averageEngagementRate: 8.5,
+    mostUsedPlatform: 'linkedin',
+    upcomingPostsCount: 5
   })
   const [posts, setPosts] = useState<Post[]>([
     {
@@ -332,16 +518,35 @@ export function ContentCalendar() {
     <TooltipProvider>
       <div className="space-y-6 p-6">
         <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold">Content Calendar</h1>
-            <p className="text-gray-500">Manage your scheduled content</p>
-          </div>
-          <Link href="/rewards" passHref>
-            <Button variant="outline">
-              <Award className="mr-2 h-4 w-4" /> Rewards
+          <div className="flex items-center space-x-4 flex-1">
+            <Input
+              placeholder="Search posts..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="max-w-sm"
+            />
+            <Button 
+              variant="outline"
+              onClick={() => setIsFilterOpen(true)}
+            >
+              <Filter className="mr-2 h-4 w-4" />
+              Filter
             </Button>
-          </Link>
+          </div>
+          <div className="flex items-center space-x-4">
+            <Button className="bg-[#5A73A3] hover:bg-[#5A73A3]/80 text-white">
+              <Plus className="mr-2 h-4 w-4" />
+              Schedule Post
+            </Button>
+            <Link href="/rewards" passHref>
+              <Button variant="outline">
+                <Award className="mr-2 h-4 w-4" /> Rewards
+              </Button>
+            </Link>
+          </div>
         </div>
+
+        <AnalyticsSection analytics={analytics} />
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts
@@ -362,6 +567,13 @@ export function ContentCalendar() {
           onClose={() => setSelectedPost(null)}
           onSave={handleUpdatePost}
           onDelete={handleDeletePost}
+        />
+
+        <FilterDialog
+          isOpen={isFilterOpen}
+          onClose={() => setIsFilterOpen(false)}
+          filters={filters}
+          onApplyFilters={setFilters}
         />
       </div>
     </TooltipProvider>
