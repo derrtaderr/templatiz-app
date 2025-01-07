@@ -211,40 +211,24 @@ export function PerformanceInsights() {
 }
 
 export function QuickActions() {
+  const actions = [
+    { icon: FileText, label: "Create Blog Post", color: "text-blue-600" },
+    { icon: Video, label: "Record Video", color: "text-green-600" },
+    { icon: Calendar, label: "Schedule Content", color: "text-purple-600" },
+    { icon: Save, label: "Save Template", color: "text-orange-600" },
+  ]
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Quick Actions</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Button 
-            className="h-20 flex flex-col items-center justify-center bg-[#5C75A5] hover:bg-[#6D86B5] active:bg-[#4A5E87] text-white font-medium transition-colors duration-200 ease-in-out rounded-md"
-          >
-            <Plus className="h-5 w-5 mb-1" />
-            <span>Create Post</span>
-          </Button>
-          <Button 
-            className="h-20 flex flex-col items-center justify-center bg-[#5C75A5] hover:bg-[#6D86B5] active:bg-[#4A5E87] text-white font-medium transition-colors duration-200 ease-in-out rounded-md"
-          >
-            <FileText className="h-5 w-5 mb-1" />
-            <span>New Blog</span>
-          </Button>
-          <Button 
-            className="h-20 flex flex-col items-center justify-center bg-[#5C75A5] hover:bg-[#6D86B5] active:bg-[#4A5E87] text-white font-medium transition-colors duration-200 ease-in-out rounded-md"
-          >
-            <Video className="h-5 w-5 mb-1" />
-            <span>Record Video</span>
-          </Button>
-          <Button 
-            className="h-20 flex flex-col items-center justify-center bg-[#5C75A5] hover:bg-[#6D86B5] active:bg-[#4A5E87] text-white font-medium transition-colors duration-200 ease-in-out rounded-md"
-          >
-            <Repeat className="h-5 w-5 mb-1" />
-            <span>Repurpose</span>
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {actions.map((action) => (
+        <Card key={action.label} className="cursor-pointer hover:bg-muted/50 transition-colors">
+          <CardContent className="p-6 flex flex-col items-center justify-center space-y-2">
+            <action.icon className={`h-8 w-8 ${action.color}`} />
+            <span className="text-sm font-medium">{action.label}</span>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   )
 }
 
