@@ -20,12 +20,11 @@ export function ContentSuite() {
     longform: ""
   })
   const [selectedBlogTopic, setSelectedBlogTopic] = useState("")
-  const [blogTopic, setBlogTopic] = useState(""); // Added blogTopic state
+  const [blogTopic, setBlogTopic] = useState("")
 
   const handleBlogApproved = (content: string) => {
     setBlogContent(content)
     setCurrentStep(1)
-    // Simulate generating platform-specific content
     setPlatformContent({
       linkedin: `LinkedIn post based on: ${content.substring(0, 50)}...`,
       twitter: `Twitter thread based on: ${content.substring(0, 50)}...`,

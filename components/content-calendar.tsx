@@ -1,146 +1,368 @@
 "use client"
 
 import { useState } from 'react'
-import { CalendarView } from './calendar-view'
-import { SidePanel } from './side-panel'
-import { CalendarTopBar } from './calendar-top-bar'
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { addDays, startOfMonth, endOfMonth } from 'date-fns'
-import { CreatePostModal } from './create-post-modal'
-import { PostPreviewModal } from './post-preview-modal'
-import { CalendarInsights } from './calendar-insights'
 import { Button } from "@/components/ui/button"
-import { Award } from 'lucide-react'
+import { Award, Edit2 } from 'lucide-react'
 import Link from 'next/link'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { format } from 'date-fns'
+import { Card } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Linkedin, Twitter, Youtube } from 'lucide-react'
+import { Checkbox } from "@/components/ui/checkbox"
+
+interface Analytics {
+  totalScheduledPosts: number
+  averageEngagementRate: number
+  mostUsedPlatform: 'linkedin' | 'twitter' | 'youtube'
+  upcomingPostsCount: number
+}
+
+interface Filters {
+  dateRange: {
+    start: Date | null
+    end: Date | null
+  }
+  status: ('scheduled' | 'published' | 'draft')[]
+  platforms: ('linkedin' | 'twitter' | 'youtube')[]
+}
+
+interface Post {
+  id: number
+  title: string
+  content: string
+  platform: 'linkedin' | 'twitter' | 'youtube'
+  accountImage: string
+  authorName: string
+  authorInitials: string
+  status: 'scheduled' | 'published' | 'draft'
+  scheduledDate: Date
+  characterCount: number
+  maxCharacters: number
+  engagementRate?: number
+}
+
+interface EditModalProps {
+  post: Post | null
+  isOpen: boolean
+  onClose: () => void
+  onSave: (post: Post) => void
+  onDelete: (id: number) => void
+}
+
+function EditModal({ post, isOpen, onClose, onSave, onDelete }: EditModalProps) {
+  if (!post) return null
+  const [postToAllPlatforms, setPostToAllPlatforms] = useState(false)
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[600px] bg-[#2d3748] border-[#4b5563] text-[#f3f4f6]">
+        <DialogHeader>
+          <DialogTitle className="text-[#f3f4f6]">Edit Scheduled Post</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <Tabs defaultValue="content">
+            <TabsList className="bg-[#4b5563]">
+              <TabsTrigger value="content">Content</TabsTrigger>
+              <TabsTrigger value="scheduling">Scheduling</TabsTrigger>
+            </TabsList>
+            <TabsContent value="content">
+              <div className="space-y-4">
+                <textarea
+                  className="w-full min-h-[200px] p-4 rounded-md bg-[#374151] border-[#4b5563] text-[#f3f4f6] placeholder-[#9ca3af] focus:ring-[#5A73A3]"
+                  defaultValue={post.content}
+                  placeholder="Enter your post content..."
+                />
+              </div>
+            </TabsContent>
+            <TabsContent value="scheduling">
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm text-[#9ca3af]">Date</label>
+                    <Input
+                      type="date"
+                      defaultValue={format(post.scheduledDate, 'yyyy-MM-dd')}
+                      className="bg-[#374151] border-[#4b5563] text-[#f3f4f6]"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-[#9ca3af]">Time</label>
+                    <Input
+                      type="time"
+                      defaultValue={format(post.scheduledDate, 'HH:mm')}
+                      className="bg-[#374151] border-[#4b5563] text-[#f3f4f6]"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm text-[#9ca3af]">Platform</label>
+                  <Select defaultValue={post.platform}>
+                    <SelectTrigger className="bg-[#374151] border-[#4b5563] text-[#f3f4f6]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#2d3748] border-[#4b5563]">
+                      <SelectItem value="linkedin" className="text-[#f3f4f6]">LinkedIn</SelectItem>
+                      <SelectItem value="twitter" className="text-[#f3f4f6]">Twitter</SelectItem>
+                      <SelectItem value="youtube" className="text-[#f3f4f6]">YouTube</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="flex items-center space-x-2 mt-2">
+                    <Checkbox 
+                      id="postToAll"
+                      checked={postToAllPlatforms}
+                      onCheckedChange={(checked) => setPostToAllPlatforms(checked as boolean)}
+                      className="border-[#4b5563] data-[state=checked]:bg-[#5A73A3]"
+                    />
+                    <label 
+                      htmlFor="postToAll" 
+                      className="text-sm text-[#9ca3af]"
+                    >
+                      Post to all platforms
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+        <div className="flex justify-between pt-4 border-t border-[#4b5563]">
+          <Button 
+            variant="destructive" 
+            onClick={() => onDelete(post.id)}
+          >
+            Delete Post
+          </Button>
+          <div className="space-x-2">
+            <Button 
+              variant="outline" 
+              onClick={onClose}
+              className="border-[#4b5563] text-[#9ca3af] hover:text-[#f3f4f6]"
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => onSave(post)}
+              className="bg-[#5A73A3] text-[#f3f4f6] hover:bg-[#4C6288]"
+            >
+              Save Changes
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function ContentCard({ post, onEdit }: { post: Post, onEdit: (post: Post) => void }) {
+  const platformIcons = {
+    linkedin: "/linkedin-icon.svg",
+    twitter: "/twitter-icon.svg",
+    youtube: "/youtube-icon.svg",
+  }
+
+  return (
+    <Card 
+      className="group relative overflow-hidden bg-[#2d3748] text-[#f3f4f6] border-[#4b5563] transition-all duration-200 hover:shadow-lg hover:border-[#5A73A3] cursor-pointer"
+    >
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 rounded-full bg-[#4b5563] flex items-center justify-center text-sm font-medium text-[#f3f4f6]">
+              {post.authorInitials}
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-medium text-[#f3f4f6]">{post.authorName}</span>
+              <span className="text-xs text-[#9ca3af]">{format(post.scheduledDate, 'MM/dd/yyyy')}</span>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Badge 
+              variant="secondary" 
+              className={`
+                ${post.status === 'published' ? 'bg-[#4b5563] text-[#f3f4f6]' :
+                  post.status === 'scheduled' ? 'bg-[#5A73A3] text-[#f3f4f6]' :
+                  'bg-[#4b5563] text-[#f3f4f6]'}
+              `}
+            >
+              {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
+            </Badge>
+            {post.platform === 'linkedin' ? (
+              <Linkedin className="h-5 w-5 text-blue-600" />
+            ) : post.platform === 'twitter' ? (
+              <Twitter className="h-5 w-5 text-sky-500" />
+            ) : (
+              <Youtube className="h-5 w-5 text-red-500" />
+            )}
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-lg font-semibold text-[#f3f4f6]">{post.title}</h3>
+          <p className="text-sm text-[#9ca3af] line-clamp-2">{post.content}</p>
+        </div>
+
+        <div className="flex justify-between items-center text-xs text-[#9ca3af] pt-4 border-t border-[#4b5563]">
+          <div className="flex space-x-6">
+            <span>{post.characterCount} chars</span>
+            {post.engagementRate !== undefined && (
+              <span>{post.engagementRate}% engagement</span>
+            )}
+            <span>Last used: {format(post.scheduledDate, 'MM/dd/yyyy')}</span>
+          </div>
+        </div>
+
+        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#2d3748] to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="absolute bottom-0 left-0 right-0 p-2 flex justify-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEdit(post)}
+              className="text-[#9ca3af] hover:text-[#f3f4f6]"
+            >
+              <Edit2 className="h-4 w-4 mr-1" />
+              Edit
+            </Button>
+          </div>
+        </div>
+      </div>
+    </Card>
+  )
+}
+
+function AnalyticsSection({ analytics }: { analytics: Analytics }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <Card className="p-4 bg-[#2d3748] border-[#4b5563]">
+        <div className="space-y-2">
+          <p className="text-sm text-[#9ca3af]">Total Scheduled</p>
+          <p className="text-2xl font-bold text-[#f3f4f6]">{analytics.totalScheduledPosts}</p>
+        </div>
+      </Card>
+      <Card className="p-4 bg-[#2d3748] border-[#4b5563]">
+        <div className="space-y-2">
+          <p className="text-sm text-[#9ca3af]">Avg. Engagement</p>
+          <p className="text-2xl font-bold text-[#f3f4f6]">{analytics.averageEngagementRate}%</p>
+        </div>
+      </Card>
+      <Card className="p-4 bg-[#2d3748] border-[#4b5563]">
+        <div className="space-y-2">
+          <p className="text-sm text-[#9ca3af]">Most Used Platform</p>
+          <p className="text-2xl font-bold text-[#f3f4f6] capitalize">{analytics.mostUsedPlatform}</p>
+        </div>
+      </Card>
+      <Card className="p-4 bg-[#2d3748] border-[#4b5563]">
+        <div className="space-y-2">
+          <p className="text-sm text-[#9ca3af]">Next 7 Days</p>
+          <p className="text-2xl font-bold text-[#f3f4f6]">{analytics.upcomingPostsCount}</p>
+        </div>
+      </Card>
+    </div>
+  )
+}
 
 export function ContentCalendar() {
-  const [view, setView] = useState<'month' | 'week' | 'day'>('month')
-  const [currentDate, setCurrentDate] = useState(new Date())
-  const [filters, setFilters] = useState({
-    platforms: [],
-    categories: [],
-    contentTypes: [],
-    performance: null
+  const [searchQuery, setSearchQuery] = useState("")
+  const [filters, setFilters] = useState<Filters>({
+    dateRange: { start: null, end: null },
+    status: [],
+    platforms: []
   })
-  const [events, setEvents] = useState([
+  const [posts, setPosts] = useState<Post[]>([
     {
       id: 1,
-      title: 'Growth Strategies for Startups',
-      start: addDays(new Date(), 1),
-      end: addDays(new Date(), 1),
-      category: 'Growth',
+      title: "Growth Strategy Post",
+      content: 'Discover key growth strategies for your startup in 2023. Learn how successful entrepreneurs scale their businesses effectively while maintaining sustainable growth...',
       platform: 'linkedin',
-      contentType: 'Post',
+      accountImage: '/default-profile.png',
+      authorName: "Mike Johnson",
+      authorInitials: "MJ",
       status: 'scheduled',
-      content: 'Discover key growth strategies for your startup in 2023...',
+      scheduledDate: new Date(2024, 0, 15, 15, 0),
+      characterCount: 150,
+      maxCharacters: 2200,
       engagementRate: 8.5
     },
     {
       id: 2,
-      title: 'Weekly Industry Insights',
-      start: addDays(new Date(), 3),
-      end: addDays(new Date(), 3),
-      category: 'Knowledge',
-      platform: 'twitter',
-      contentType: 'Thread',
+      title: "AI Impact Analysis",
+      content: 'New video alert! 🎥 Check out our latest deep dive into artificial intelligence and its impact on modern business operations. Watch now to stay ahead of the curve...',
+      platform: 'youtube',
+      accountImage: '/default-profile.png',
+      authorName: "Sarah Wilson",
+      authorInitials: "SW",
       status: 'published',
-      content: 'Stay updated with the latest trends in tech industry...',
-      engagementRate: 7.2
+      scheduledDate: new Date(2024, 0, 16, 12, 30),
+      characterCount: 140,
+      maxCharacters: 5000,
+      engagementRate: 12.3
     },
     {
       id: 3,
-      title: 'Leadership in Crisis',
-      start: addDays(new Date(), 5),
-      end: addDays(new Date(), 5),
-      category: 'Authority',
-      platform: 'youtube',
-      contentType: 'Video',
+      title: "Digital Marketing Trends",
+      content: '🧵 1/6 Breaking down the latest trends in digital marketing:\n\nFirst, let\'s talk about the rise of AI-powered content creation and how it\'s revolutionizing the way brands connect with their audience...',
+      platform: 'twitter',
+      accountImage: '/default-profile.png',
+      authorName: "Alex Chen",
+      authorInitials: "AC",
       status: 'draft',
-      content: 'Learn how to lead effectively during challenging times...',
+      scheduledDate: new Date(2024, 0, 17, 9, 0),
+      characterCount: 180,
+      maxCharacters: 280,
       engagementRate: 0
-    },
+    }
   ])
-  const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false)
-  const [selectedPost, setSelectedPost] = useState(null)
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null)
 
-  const handleCreatePost = (newPost) => {
-    setEvents([...events, { ...newPost, id: events.length + 1 }])
-    setIsCreatePostModalOpen(false)
-  }
-
-  const handleUpdatePost = (updatedPost) => {
-    setEvents(events.map(event => event.id === updatedPost.id ? updatedPost : event))
+  const handleUpdatePost = (updatedPost: Post) => {
+    setPosts(posts.map(post => post.id === updatedPost.id ? updatedPost : post))
     setSelectedPost(null)
   }
 
-  const handleDeletePost = (postId) => {
-    setEvents(events.filter(event => event.id !== postId))
+  const handleDeletePost = (postId: number) => {
+    setPosts(posts.filter(post => post.id !== postId))
     setSelectedPost(null)
-  }
-
-  const handleDragPost = (postId, newStart) => {
-    setEvents(events.map(event => 
-      event.id === postId ? { ...event, start: newStart, end: newStart } : event
-    ))
-  }
-
-  const handleDuplicatePost = (post) => {
-    const newPost = { ...post, id: events.length + 1, start: addDays(post.start, 1), end: addDays(post.end, 1) }
-    setEvents([...events, newPost])
   }
 
   return (
     <TooltipProvider>
-      <div className="space-y-6">
+      <div className="space-y-6 p-6">
         <div className="flex justify-between items-center">
-          <CalendarTopBar 
-            view={view} 
-            setView={setView}
-            currentDate={currentDate}
-            setCurrentDate={setCurrentDate}
-            filters={filters}
-            setFilters={setFilters}
-            onCreatePost={() => setIsCreatePostModalOpen(true)}
-          />
+          <div>
+            <h1 className="text-2xl font-bold">Content Calendar</h1>
+            <p className="text-gray-500">Manage your scheduled content</p>
+          </div>
           <Link href="/rewards" passHref>
             <Button variant="outline">
               <Award className="mr-2 h-4 w-4" /> Rewards
             </Button>
           </Link>
         </div>
-        <CalendarInsights events={events} />
-        <div className="flex flex-col lg:flex-row gap-6">
-          <div className="flex-grow">
-            <CalendarView 
-              view={view} 
-              currentDate={currentDate}
-              filters={filters}
-              events={events}
-              onSelectPost={setSelectedPost}
-              onDragPost={handleDragPost}
-            />
-          </div>
-          <SidePanel 
-            events={events}
-            onCreatePost={() => setIsCreatePostModalOpen(true)}
-            onSelectPost={setSelectedPost}
-          />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {posts
+            .sort((a, b) => a.scheduledDate.getTime() - b.scheduledDate.getTime())
+            .map(post => (
+              <ContentCard
+                key={post.id}
+                post={post}
+                onEdit={setSelectedPost}
+              />
+            ))
+          }
         </div>
-        <CreatePostModal
-          isOpen={isCreatePostModalOpen}
-          onClose={() => setIsCreatePostModalOpen(false)}
-          onCreatePost={handleCreatePost}
+
+        <EditModal
+          post={selectedPost}
+          isOpen={!!selectedPost}
+          onClose={() => setSelectedPost(null)}
+          onSave={handleUpdatePost}
+          onDelete={handleDeletePost}
         />
-        {selectedPost && (
-          <PostPreviewModal
-            post={selectedPost}
-            isOpen={!!selectedPost}
-            onClose={() => setSelectedPost(null)}
-            onUpdate={handleUpdatePost}
-            onDelete={handleDeletePost}
-            onDuplicate={handleDuplicatePost}
-          />
-        )}
       </div>
     </TooltipProvider>
   )
