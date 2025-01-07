@@ -548,17 +548,26 @@ export function ContentCalendar() {
 
         <AnalyticsSection analytics={analytics} />
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts
-            .sort((a, b) => a.scheduledDate.getTime() - b.scheduledDate.getTime())
-            .map(post => (
-              <ContentCard
-                key={post.id}
-                post={post}
-                onEdit={setSelectedPost}
-              />
-            ))
-          }
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-xl font-semibold text-[#f3f4f6]">Scheduled Posts</h2>
+              <p className="text-sm text-[#9ca3af]">Manage your upcoming content across platforms</p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {posts
+              .sort((a, b) => a.scheduledDate.getTime() - b.scheduledDate.getTime())
+              .map(post => (
+                <ContentCard
+                  key={post.id}
+                  post={post}
+                  onEdit={setSelectedPost}
+                />
+              ))
+            }
+          </div>
         </div>
 
         <EditModal
