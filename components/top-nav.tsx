@@ -43,7 +43,7 @@ export function TopNav({ isCollapsed, toggleSidebar }: TopNavProps) {
             <Button variant="ghost" size="icon" className="hover:bg-muted">
               <Avatar className="h-8 w-8">
                 <AvatarImage src="/avatars/01.png" alt="User" />
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarFallback>J</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>

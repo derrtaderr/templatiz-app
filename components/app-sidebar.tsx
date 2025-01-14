@@ -60,7 +60,7 @@ export function AppSidebar({ isCollapsed }: AppSidebarProps) {
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
             <div className="ml-3">
-              <p className="text-sm font-medium">John Doe</p>
+              <p className="text-sm font-medium">Jason Derr</p>
               <p className="text-xs text-[#9ca3af]">Personal account</p>
             </div>
           </div>
