@@ -48,9 +48,6 @@ export function TopNav({ isCollapsed, toggleSidebar }: TopNavProps) {
           >
             <Bell className="h-5 w-5" />
           </Button>
-          <Button className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-200">
-            <Plus className="mr-2 h-4 w-4" /> Add New Template
-          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="hover:bg-muted">
