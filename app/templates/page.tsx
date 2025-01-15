@@ -3,20 +3,31 @@
 import { TemplateGrid } from "@/components/template-grid"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import { Info } from "lucide-react"
+import { Info, Plus } from "lucide-react"
+import { CreateTemplateModal } from "@/components/create-template-modal"
 
 export default function TemplatesPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedPlatform, setSelectedPlatform] = useState("all")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [sortBy, setSortBy] = useState("newest")
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Your Template Library</h1>
-        <p className="text-muted-foreground">Manage and adapt proven templates tailored to your brand and audience</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Your Template Library</h1>
+          <p className="text-muted-foreground">Manage and adapt proven templates tailored to your brand and audience</p>
+        </div>
+        <Button 
+          className="bg-[#5A73A3] hover:bg-[#5A73A3]/90 text-white"
+          onClick={() => setIsCreateModalOpen(true)}
+        >
+          <Plus className="mr-2 h-4 w-4" /> Create Template
+        </Button>
       </div>
 
       <div className="text-sm text-muted-foreground flex items-center gap-2 bg-muted/30 p-2 rounded-md">
@@ -67,6 +78,11 @@ export default function TemplatesPage() {
       </div>
 
       <TemplateGrid />
+
+      <CreateTemplateModal 
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
     </div>
   )
 }
