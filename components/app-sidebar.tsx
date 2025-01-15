@@ -67,9 +67,9 @@ export function AppSidebar({ isCollapsed }: AppSidebarProps) {
 
           {/* Usage/Credits section */}
           <div className="p-4 border-b border-[#374151]">
-            <Progress value={33} className="mb-2" indicatorColor="bg-[#5A73A3]" />
+            <Progress value={20} className="mb-2" indicatorColor="bg-[#5A73A3]" />
             <div className="space-y-2">
-              <p className="text-xs text-[#9ca3af]">10 of 30 templates used</p>
+              <p className="text-xs text-[#9ca3af]">2 of 10 templates used</p>
               <p className="text-xs text-[#5A73A3]">Upgrade for $9.99/month</p>
               <Button 
                 variant="outline" 
