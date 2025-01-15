@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -10,6 +10,8 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as
 import { Edit, Trash2, Calendar, Plus, Video, FileText, Repeat, BarChart2, Save, Linkedin, Twitter, Youtube, Info } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { StreakWidget } from './streak-widget'
+import { useState } from 'react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 // Mock data for charts
 const platformData = [
@@ -87,38 +89,129 @@ export function TemplatesProgress() {
   )
 }
 
-export function PlatformMetrics() {
+export function PlatformOverview() {
+  type TimeRange = '7d' | '30d' | '6m' | '1y';
+  type Platform = 'linkedin' | 'twitter' | 'youtube';
+  type PlatformData = {
+    [key in Platform]: {
+      [key in TimeRange]: {
+        posts: number;
+        scheduled: number;
+        engagement: number;
+      }
+    }
+  }
+
+  const [timeRange, setTimeRange] = useState<TimeRange>('30d')
+  const [selectedPlatform, setSelectedPlatform] = useState<Platform>('linkedin')
+  
+  const platformData: PlatformData = {
+    linkedin: {
+      '7d': { posts: 3, scheduled: 5, engagement: 8.5 },
+      '30d': { posts: 12, scheduled: 5, engagement: 8.5 },
+      '6m': { posts: 48, scheduled: 5, engagement: 7.8 },
+      '1y': { posts: 96, scheduled: 5, engagement: 7.2 }
+    },
+    twitter: {
+      '7d': { posts: 5, scheduled: 3, engagement: 6.2 },
+      '30d': { posts: 20, scheduled: 3, engagement: 6.2 },
+      '6m': { posts: 72, scheduled: 3, engagement: 5.9 },
+      '1y': { posts: 144, scheduled: 3, engagement: 5.5 }
+    },
+    youtube: {
+      '7d': { posts: 1, scheduled: 2, engagement: 12.3 },
+      '30d': { posts: 4, scheduled: 2, engagement: 12.3 },
+      '6m': { posts: 16, scheduled: 2, engagement: 11.5 },
+      '1y': { posts: 32, scheduled: 2, engagement: 10.8 }
+    }
+  }
+
+  const handleTimeRangeChange = (value: TimeRange) => {
+    setTimeRange(value)
+  }
+
+  const handlePlatformChange = (value: Platform) => {
+    setSelectedPlatform(value)
+  }
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Platform Overview</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {platformData.map((platform) => (
-            <div key={platform.platform} className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                {platform.platform === 'LinkedIn' ? (
-                  <Linkedin className="h-5 w-5 text-blue-600" />
-                ) : platform.platform === 'Twitter' ? (
-                  <Twitter className="h-5 w-5 text-sky-500" />
-                ) : (
-                  <Youtube className="h-5 w-5 text-red-500" />
-                )}
-                <div>
-                  <p className="font-medium">{platform.platform}</p>
-                  <p className="text-sm text-muted-foreground">{platform.scheduled} posts scheduled</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="font-medium">{platform.engagement}%</p>
-                <p className="text-sm text-muted-foreground">Engagement</p>
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <Select value={timeRange} onValueChange={(value: TimeRange) => setTimeRange(value)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select time range" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="7d">Last 7 days</SelectItem>
+            <SelectItem value="30d">Last 30 days</SelectItem>
+            <SelectItem value="6m">Last 6 months</SelectItem>
+            <SelectItem value="1y">Last year</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>LinkedIn</CardTitle>
+            <CardDescription>Platform Overview</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{platformData.linkedin[timeRange].posts}</div>
+            <p className="text-xs text-muted-foreground">
+              Posts in the last {timeRange === '7d' ? '7 days' : 
+                               timeRange === '30d' ? '30 days' : 
+                               timeRange === '6m' ? '6 months' : 'year'}
+            </p>
+            <div className="mt-4">
+              <div className="text-lg font-semibold">{platformData.linkedin[timeRange].scheduled} scheduled</div>
+              <div className="text-sm text-muted-foreground">
+                {platformData.linkedin[timeRange].engagement}% engagement rate
               </div>
             </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Twitter</CardTitle>
+            <CardDescription>Platform Overview</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{platformData.twitter[timeRange].posts}</div>
+            <p className="text-xs text-muted-foreground">
+              Posts in the last {timeRange === '7d' ? '7 days' : 
+                               timeRange === '30d' ? '30 days' : 
+                               timeRange === '6m' ? '6 months' : 'year'}
+            </p>
+            <div className="mt-4">
+              <div className="text-lg font-semibold">{platformData.twitter[timeRange].scheduled} scheduled</div>
+              <div className="text-sm text-muted-foreground">
+                {platformData.twitter[timeRange].engagement}% engagement rate
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>YouTube</CardTitle>
+            <CardDescription>Platform Overview</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{platformData.youtube[timeRange].posts}</div>
+            <p className="text-xs text-muted-foreground">
+              Posts in the last {timeRange === '7d' ? '7 days' : 
+                               timeRange === '30d' ? '30 days' : 
+                               timeRange === '6m' ? '6 months' : 'year'}
+            </p>
+            <div className="mt-4">
+              <div className="text-lg font-semibold">{platformData.youtube[timeRange].scheduled} scheduled</div>
+              <div className="text-sm text-muted-foreground">
+                {platformData.youtube[timeRange].engagement}% engagement rate
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   )
 }
 
@@ -207,28 +300,6 @@ export function PerformanceInsights() {
         </Tabs>
       </CardContent>
     </Card>
-  )
-}
-
-export function QuickActions() {
-  const actions = [
-    { icon: FileText, label: "Create Blog Post", color: "text-blue-600" },
-    { icon: Video, label: "Record Video", color: "text-green-600" },
-    { icon: Calendar, label: "Schedule Content", color: "text-purple-600" },
-    { icon: Save, label: "Save Template", color: "text-orange-600" },
-  ]
-
-  return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {actions.map((action) => (
-        <Card key={action.label} className="cursor-pointer hover:bg-muted/50 transition-colors">
-          <CardContent className="p-6 flex flex-col items-center justify-center space-y-2">
-            <action.icon className={`h-8 w-8 ${action.color}`} />
-            <span className="text-sm font-medium">{action.label}</span>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
   )
 }
 
