@@ -8,6 +8,16 @@ import { Badge } from "@/components/ui/badge"
 import { Twitter, Linkedin, Eye, Copy, BarChart2, Trash2, FileEdit } from "lucide-react"
 import { TemplateModal } from "./template-modal"
 import { useToast } from "@/components/ui/use-toast"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 interface Template {
   id: string
@@ -28,6 +38,7 @@ export function TemplateGrid() {
   const [templates, setTemplates] = useState<Template[]>([])
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [deleteTemplate, setDeleteTemplate] = useState<Template | null>(null)
   const { toast } = useToast()
 
   const supabase = createBrowserClient(
@@ -96,12 +107,18 @@ export function TemplateGrid() {
     })
   }
 
-  const handleDeleteTemplate = async (templateId: string) => {
+  const handleDeleteClick = (template: Template) => {
+    setDeleteTemplate(template)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTemplate) return
+
     try {
       const { error } = await supabase
         .from('templates')
         .delete()
-        .eq('id', templateId)
+        .eq('id', deleteTemplate.id)
 
       if (error) throw error
 
@@ -118,6 +135,8 @@ export function TemplateGrid() {
         description: "Failed to delete template",
         variant: "destructive",
       })
+    } finally {
+      setDeleteTemplate(null)
     }
   }
 
@@ -198,7 +217,7 @@ export function TemplateGrid() {
                   </button>
                   <button 
                     className="text-gray-400 hover:text-gray-200 transition-colors"
-                    onClick={() => handleDeleteTemplate(template.id)}
+                    onClick={() => handleDeleteClick(template)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -224,6 +243,29 @@ export function TemplateGrid() {
           template={selectedTemplate}
         />
       )}
+
+      <AlertDialog open={!!deleteTemplate} onOpenChange={() => setDeleteTemplate(null)}>
+        <AlertDialogContent className="bg-[#1e293b] border-[#2d3748]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to delete this template?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the template
+              "{deleteTemplate?.title}".
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-[#2d3748] text-gray-200 hover:bg-[#374151] hover:text-gray-100">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={handleConfirmDelete}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
